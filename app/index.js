@@ -7,6 +7,7 @@
 const fs = require('fs')
 const path =require('path')
 const staticServer = require('./staic-server')
+const apiServer = require('./api')
 
 class App {
 	constructor() {
@@ -14,20 +15,32 @@ class App {
 	}
 	initServer(){
 		//做一些初始化工作
-		//高阶函数.以函数做为函数的返回值   .根据url进行代码分发
 		return (request, response)=>{
-			let { url } = request;
 			// 相当于let url = request.url
-			// const staticPrefix  = path.resolve(process.cwd(),'public')
+			let { url } = request;
+			let body = ''
+ 			let headers = {}
 
-			let getPath = (url)=>{
-				return path.resolve(process.cwd(),'public',`.${url}`)
+			if(url.match('action')){
+				apiServer(url).then(val=>{
+					body  = JSON.stringify(val)
+					headers  ={
+						'Content-Type':'application/json'
+					}
+					let fianlHeader = Object.assign(headers,{'X-powered-by':'Node.js'})
+					response.writeHead(200, 'reslove ok',fianlHeader)
+					response.end(body)
+				})
+			}else{
+				staticServer(url).then((body)=>{
+					let fianlHeader = Object.assign(headers,{'X-powered-by':'Node.js'})
+					response.writeHead(200, 'reslove ok',fianlHeader)
+					response.end(body)
+				})
 			}
-
-
-			let body = staticServer(url)
-			response.end(body)
-
+			// let getPath = (url)=>{
+			// 	return path.resolve(process.cwd(),'public',`.${url}`)
+			// }
 		}
 		
 	}
