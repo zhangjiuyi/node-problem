@@ -17,9 +17,16 @@ setTimeout(function(){
 		}
 	})
 
+	//post请求
 	$.ajax({
 		url: '/list.action',
-		method: 'get',
+		method: 'post',
+		headers: {
+			'content-type': 'application/json'
+		},
+		data: JSON.stringify(
+			['name','jiuyi']
+		),
 		success: function(arr){
 			// debugger
 			var liStr = arr.map(function(el){

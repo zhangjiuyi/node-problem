@@ -8,7 +8,7 @@ const fs = require('fs')
 const path =require('path')
 const staticServer = require('./staic-server')
 const apiServer = require('./api')
-
+const urlParser = require('./url-parser')
 class App {
 	constructor() {
 		
@@ -17,32 +17,38 @@ class App {
 		//做一些初始化工作
 		return (request, response)=>{
 			// 相当于let url = request.url
-			let { url } = request;
-			let body = ''
- 			let headers = {}
+			let { url , method } = request;
+			request.context = {
+				body: '',
+				query: {},
+				method: 'get'
+			};
 
-			if(url.match('action')){
-				apiServer(url).then(val=>{
+			urlParser(request).then(()=>{
+				return  apiServer(request)
+			}).then(val=>{
+				if(!val){
+					return staticServer(request)
+				}else{
+					return val
+				}
+			}).then((val)=>{
+				//val来自apiserver
+				let base = {'X-powered-by':'Node.js'}
+				let body = ''
+				if( val instanceof Buffer ){
+					body = val
+				}else{
 					body  = JSON.stringify(val)
-					headers  ={
+					let fianlHeader = Object.assign(base,{
 						'Content-Type':'application/json'
-					}
-					let fianlHeader = Object.assign(headers,{'X-powered-by':'Node.js'})
-					response.writeHead(200, 'reslove ok',fianlHeader)
-					response.end(body)
-				})
-			}else{
-				staticServer(url).then((body)=>{
-					let fianlHeader = Object.assign(headers,{'X-powered-by':'Node.js'})
-					response.writeHead(200, 'reslove ok',fianlHeader)
-					response.end(body)
-				})
-			}
-			// let getPath = (url)=>{
-			// 	return path.resolve(process.cwd(),'public',`.${url}`)
-			// }
+					});
+					response.writeHead(200, 'resolve ok',fianlHeader)
+				}
+				response.end(body)
+
+			})
 		}
-		
 	}
 }
 module.exports = App

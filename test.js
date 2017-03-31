@@ -11,19 +11,19 @@
 //第一步 new Promise
 
 
-let p = new Promise((resolve,reject)=>{
-	setTimeout(reject,1000, 'hello world')
-})
-console.log(p)
+// let p = new Promise((resolve,reject)=>{
+// 	setTimeout(reject,1000, 'hello world')
+// })
+// console.log(p)
 
 
-//then第一个参数是处理resolve的结果, 第二个参数才是处理reject的结果
-var another = p.then((val)=>{
-	console.log(` resolve val is ${val}`)
-},(val)=>{
-	console.log(` reject val is ${val}`)
-})
-console.log(another instanceof Promise)
+// //then第一个参数是处理resolve的结果, 第二个参数才是处理reject的结果
+// var another = p.then((val)=>{
+// 	console.log(` resolve val is ${val}`)
+// },(val)=>{
+// 	console.log(` reject val is ${val}`)
+// })
+// console.log(another instanceof Promise)
 
 //catch只处理reject的结果 接受一个参数
 
@@ -46,3 +46,24 @@ console.log(another instanceof Promise)
 // -pending
 // -rejected
 // -fulfilled
+
+
+//- - -- - -
+
+
+//3月 31日
+
+const assert = require('assert')
+
+const p = Promise.resolve(1);
+const p1 = p.then(val=>{
+	console.log(val)
+	return val+1
+})
+
+const p2 = p1.then(val=>{
+	console.log(val)
+	assert.equal(val,2)
+})
+
+
