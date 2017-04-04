@@ -6,7 +6,6 @@ setTimeout(function(){
 		success: function(arr){
 			// debugger
 			var liStr = arr.map(function(el){
-				console.log(el)
 				return '<li>'+ el +'</li>'
 			}).join('')		
 			$('#root').html(liStr)
@@ -28,13 +27,10 @@ setTimeout(function(){
 			['name','jiuyi']
 		),
 		success: function(arr){
-			// debugger
 			var liStr = arr.map(function(el){
-				console.log(el)
 				return '<li>'+ el +'</li>'
 			}).join('')		
 			$('#shop').html(liStr)
-
 		},
 		error: function(error){
 			console.log(error)

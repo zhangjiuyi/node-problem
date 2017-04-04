@@ -6,47 +6,50 @@
 	
 const fs = require('fs')
 const path =require('path')
-const staticServer = require('./staic-server')
-const apiServer = require('./api')
-const urlParser = require('./url-parser')
+
 class App {
 	constructor() {
-		
+		this.middlewareArr = []
+	}
+
+	use(middleware) {
+		this.middlewareArr.push(middleware)
+		//一个空的promise 
+		this.middlewareChain = Promise.resolve()
+	}
+	//创建Promise链条
+	composeMiddleware(context) {
+		let { middlewareArr } = this
+		//根据中间件数组创建promise链
+		for(let middleware of middlewareArr){
+			this.middlewareChain = this.middlewareChain.then(()=>{
+				return middleware(context)
+			})
+		}
+		return this.middlewareChain
 	}
 	initServer(){
 		//做一些初始化工作
 		return (request, response)=>{
-			// 相当于let url = request.url
 			let { url , method } = request;
-			request.context = {
-				body: '',
-				query: {},
-				method: 'get'
-			};
-
-			urlParser(request).then(()=>{
-				return  apiServer(request)
-			}).then(val=>{
-				if(!val){
-					return staticServer(request)
-				}else{
-					return val
+			let context = {
+				req: request,
+				reqCtx:{
+					body: '',//post请求的数据
+					query: {}//处理客户端get请求
+				},
+				res: response,
+				resCtx: {
+					headers: {}, //response的请求报文
+					body: ''//返回给前端的内容区
 				}
-			}).then((val)=>{
-				//val来自apiserver
-				let base = {'X-powered-by':'Node.js'}
-				let body = ''
-				if( val instanceof Buffer ){
-					body = val
-				}else{
-					body  = JSON.stringify(val)
-					let fianlHeader = Object.assign(base,{
-						'Content-Type':'application/json'
-					});
-					response.writeHead(200, 'resolve ok',fianlHeader)
-				}
-				response.end(body)
-
+			}
+			this.composeMiddleware(context)
+				.then(()=>{
+					let { body, headers } = context.resCtx
+					let base = {'X-powered-by':'Node.js'}
+					response.writeHead(200, 'resolve ok',Object.assign(base, headers))
+					response.end(body)
 			})
 		}
 	}

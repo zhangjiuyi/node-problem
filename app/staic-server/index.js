@@ -1,23 +1,32 @@
-	
+/*
+* 静态资源服务
+*/	
 
 
 const path = require('path')
 const fs = require('fs')
 
 let getPath = url=> path.resolve(process.cwd(),'public',`.${url}`)
-let staticFunc = (request) =>{
-	let {url} = request
+let staticFunc = (ctx) =>{
+	let {url} = ctx.req
+	let { resCtx } = ctx
 	return new Promise((resolve,reject)=>{
-		if(url == '/'){
-			url = '/index.html'
-		}
-		let _path = getPath(url)
-		let body  = fs.readFile(_path, (err, data)=>{
-			if(err){
-				reject(`not fount${err.stack}`)
+		if(!url.match('action')){
+			if(url == '/'){
+				url = '/index.html'
 			}
-			resolve(data)
-		})
+			let _path = getPath(url)
+			let body  = fs.readFile(_path, (err, data)=>{
+				if(err){
+					resCtx.body = `not fount${err.stack}`
+				}
+				resCtx.body = data
+				resolve()
+			})
+		}else{
+			resolve()
+		}
+
 	})
 }
 
