@@ -1,0 +1,48 @@
+@import './highlight/dark.scss';
+body{
+	font-size:16px;
+	background: gray;
+
+}
+.clear-fix{	
+	&:after{
+		display: block;
+		content: '';
+		clear: both;
+	}
+}
+
+
+.header{
+	padding: 20px;
+	.logo{
+		float: left;
+		height: 100px;
+		width: 100px;
+	}
+	.nav{
+		float: left;
+		li{
+			display: inline-block;
+			padding: 20px;
+			a{	
+			  	transition: 1s;
+				&:hover{
+					color: yellow;
+				}
+			}
+		}
+
+	}
+}
+.content{
+	height: 800px;
+	border: 1px solid blue;
+}
+
+.footer{
+	height: 200px;
+	border: 1px solid red;
+
+}
+

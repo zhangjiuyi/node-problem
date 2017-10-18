@@ -35,20 +35,24 @@ class App {
 			let context = {
 				req: request,
 				reqCtx:{
+					hasUser: false,
 					body: '',//post请求的数据
 					query: {}//处理客户端get请求
 				},
 				res: response,
 				resCtx: {
+					statusMessage: 'resolve ok',
+					statusCode: 200,
 					headers: {}, //response的请求报文
 					body: ''//返回给前端的内容区
 				}
 			}
 			this.composeMiddleware(context)
 				.then(()=>{
-					let { body, headers } = context.resCtx
+					let { body, headers, statusCode, statusMessage } = context.resCtx
 					let base = {'X-powered-by':'Node.js'}
-					response.writeHead(200, 'resolve ok',Object.assign(base, headers))
+
+					response.writeHead(statusCode, statusMessage, Object.assign(base, headers))
 					response.end(body)
 			})
 		}

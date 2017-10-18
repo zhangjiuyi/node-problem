@@ -15,16 +15,15 @@ module.exports = (ctx)=>{
 	method = method.toLowerCase();
 	return Promise.resolve({
 		then: (resolve,reject)=>{
-			// context.method = method;
+			let data = []
 			// context.query = {}
 			if(method == 'post'){
 				//stream存在两种状态一种paused 死流 flew 流动的
-				let data = ''
 				ctx.req.on('data',(chunk)=>{
-					data += chunk
+					data.push(chunk)
 				}).on('end',()=>{
-
-					reqCtx.body =JSON.parse(data)
+					let endData = Buffer.concat(data).toString()
+					reqCtx.body =JSON.parse(endData)
 
 					resolve()
 				})		

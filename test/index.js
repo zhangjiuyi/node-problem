@@ -1,3 +1,3 @@
 
 
-require('./buffer')
+require('./ejs')

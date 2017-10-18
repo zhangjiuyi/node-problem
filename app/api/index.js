@@ -24,7 +24,6 @@ module.exports = (ctx)=>{
 				if(method == 'get'){
 					resCtx.body = JSON.stringify(apiMap[url])
 				}else{
-					debugger
 					let { body } = reqCtx
 
 					resCtx.body = JSON.stringify(body)
